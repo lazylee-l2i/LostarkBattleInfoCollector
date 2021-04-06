@@ -1,6 +1,10 @@
 # LostarkBattleInfoCollector
  로스트아크 영지 관련 아이템 크롤러
 
+# 개발환경
+1. OS : Windows 10
+2. Python : 3.9.x
+
  ## 워크로드
  ```
 1. Inven or LostArk Official Web 크롤링
