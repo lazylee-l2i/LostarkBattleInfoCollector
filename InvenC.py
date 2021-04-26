@@ -6,6 +6,7 @@ import sys
 import pathlib
 from time import sleep
 from urllib.request import urlretrieve
+import json
 
 
 class InvenLostArkItemDictParser:
@@ -50,7 +51,13 @@ class InvenLostArkItemDictParser:
         # Get Item Name & page link
         _result = _ls[0].select("a[class='name']")
         for link in _result:
-            _tdict["name"].append(link.get_text())
+            real_name = ""
+            if link.select_one('span') is not None:
+                temp = link.select_one('span').get_text()
+                real_name = link.get_text().replace(temp, '')
+            else:
+                real_name = link.get_text()
+            _tdict["name"].append(real_name.rstrip())
             _tdict["link"].append(link["href"])
 
         # Get Item Image link
@@ -71,8 +78,15 @@ class InvenLostArkItemDictParser:
         (battle_path/"img").mkdir(parents=True,exist_ok=True)
 
         for i in _duplicate_num:
+            (battle_path/_tdict["name"][i]).mkdir(parents=True,exist_ok=True)
+            temp = {
+                'name':_tdict["name"][i],
+                'link': self.base_link + _tdict["link"][i]
+            }
+            with (battle_path/_tdict["name"][i]/(_tdict["name"][i]+'.json')).open('w', encoding='UTF-8-sig') as json_file:
+                json_file.write(json.dumps(temp, indent=4, ensure_ascii=False))
             url = _tdict["img"][i]
-            urlretrieve(url, "./resources/battleitem/img/"+_tdict["name"][i]+'.png')
+            urlretrieve(url, "./resources/battleitem/"+_tdict["name"][i] + '/' +_tdict["name"][i]+'.png')
 
 
 
